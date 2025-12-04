@@ -54,4 +54,4 @@ out/
 *.azuredevops
 
 # Github
-.github/
+# .github/ - COMMENTED OUT: GitHub Actions workflows must be committed
