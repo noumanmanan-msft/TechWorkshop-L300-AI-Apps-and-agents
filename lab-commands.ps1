@@ -1,0 +1,1 @@
+az deployment group create --resource-group techworkshop-l300-ai-agents --template-file src/infra/DeployAzureResources.bicep --parameters parameters.json
