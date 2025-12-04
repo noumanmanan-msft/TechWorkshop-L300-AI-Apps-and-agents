@@ -17,6 +17,21 @@ jobs:
       # Checkout the code
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for git describe
+
+      # Generate version number from git tag or use date-based version
+      - name: Generate version number
+        id: version
+        run: |
+          # Try to get version from git tag, otherwise use date-based version
+          if git describe --tags --exact-match 2>/dev/null; then
+            VERSION=$(git describe --tags --exact-match)
+          else
+            VERSION="v$(date +'%Y.%m.%d')-${GITHUB_SHA::7}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Generated version: $VERSION"
 
       # Login to Azure Container Registry
       - name: Login to Azure Container Registry
@@ -32,15 +47,19 @@ jobs:
         run: |
           echo "${{ secrets.ENV }}" > .env
 
-      # Build the Docker image only with src/ contents, tagging it with the short SHA
+      # Build the Docker image with version tag
       - name: Build and tag Docker image
         run: |
-          docker build --file src/Dockerfile --tag ${{ env.AZURE_CONTAINER_REGISTRY }}/techworkshop:${{ github.sha }} src
+          docker build --file src/Dockerfile \
+            --tag ${{ env.AZURE_CONTAINER_REGISTRY }}/chat-app:${{ steps.version.outputs.version }} \
+            --tag ${{ env.AZURE_CONTAINER_REGISTRY }}/chat-app:latest \
+            src
 
       # Push the image to Azure Container Registry
       - name: Push Docker image
         run: |
-          docker push ${{ env.AZURE_CONTAINER_REGISTRY }}/techworkshop:${{ github.sha }}
+          docker push ${{ env.AZURE_CONTAINER_REGISTRY }}/chat-app:${{ steps.version.outputs.version }}
+          docker push ${{ env.AZURE_CONTAINER_REGISTRY }}/chat-app:latest
 
       # Remove the .env file after build for security (optional, but good practice)
       - name: Remove .env file
