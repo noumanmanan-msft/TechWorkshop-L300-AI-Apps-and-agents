@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AZURE_CONTAINER_REGISTRY: ${{ secrets.AZURE_CONTAINER_REGISTRY }}   # e.g. myregistry.azurecr.io
-      AZURE_CONTAINER_USERNAME: ${{ secrets.AZURE_CONTAINER_USERNAME }}   # service principal appId or admin username
-      AZURE_CONTAINER_PASSWORD: ${{ secrets.AZURE_CONTAINER_PASSWORD }}   # password or service principal password
+      AZURE_CONTAINER_USERNAME: ${{ secrets.AZURE_CONTAINER_REGISTRY_USERNAME }}   # service principal appId or admin username
+      AZURE_CONTAINER_PASSWORD: ${{ secrets.AZURE_CONTAINER_REGISTRY_PASSWORD }}   # password or service principal password
 
     steps:
       # Checkout the code
